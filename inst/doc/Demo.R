@@ -1,29 +1,32 @@
-## ----setup, include = FALSE----------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 library(VancouvR)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-## ------------------------------------------------------------------------
-search_cov_datasets("property") %>%
-  select(dataset_id,title) %>%
-  tail(10)
+## -----------------------------------------------------------------------------
+search_cov_datasets("property-tax") %>%
+  select(dataset_id,title)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 get_cov_metadata("property-tax-report") %>%
   tail(10)
 
-## ------------------------------------------------------------------------
-aggregate_cov_data("property-tax-report",
-                   group_by="tax_assessment_year as Year",
-                   where="zone_name like 'RS-'",
-                   select="sum(current_land_value) as Land, sum(current_improvement_value) as Building") %>% 
+## -----------------------------------------------------------------------------
+search_cov_datasets("property-tax") %>%
+  pull(dataset_id) %>%
+  lapply(function(ds)
+    aggregate_cov_data(ds,
+                       group_by="tax_assessment_year as Year",
+                       where="zone_name like 'RS-'",
+                       select="sum(current_land_value) as Land, sum(current_improvement_value) as Building")) %>% 
+  bind_rows() %>%
   mutate(Date=as.Date(paste0(as.integer(Year)-1,"-07-01"))) %>%
   pivot_longer(c("Land","Building")) %>%
   ggplot(aes(x=Year,y=value,color=name,group=name)) +
@@ -31,13 +34,13 @@ aggregate_cov_data("property-tax-report",
   scale_y_continuous(labels=function(x)paste0("$",x/1000000000,"Bn")) +
   labs(title="City of Vancouver RS zoned land values",color="",y="Aggregate value (nominal)")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 tax_data <- get_cov_data(dataset_id = "property-tax-report",
-                         where="tax_assessment_year=2019",
+                         where="tax_assessment_year=2020",
                          select = "current_land_value, land_coordinate as tax_coord")
 property_polygons <- get_cov_data(dataset_id="property-parcel-polygons",format = "geojson")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 plot_data <- property_polygons %>% 
   left_join(tax_data %>% group_by(tax_coord) %>% summarize(current_land_value=sum(current_land_value)),by="tax_coord") %>%
   mutate(rlv=current_land_value/as.numeric(sf::st_area(geometry))) %>%
@@ -47,6 +50,6 @@ plot_data <- property_polygons %>%
 ggplot(plot_data) +
   geom_sf(aes(fill=rlvd),color=NA) +
   scale_fill_viridis_d(option="magma",na.value="darkgrey") +
-  labs(title="2019 relative land values",fill="Value per m^2",caption="CoV Open Data") +
+  labs(title="2020 relative land values",fill="Value per m^2",caption="CoV Open Data") +
   coord_sf(datum=NA)
 
