@@ -1,7 +1,6 @@
 # VancouvR
 
 <!-- badges: start -->
-[![Build Status](https://travis-ci.org/mountainMath/VancouvR.svg?branch=master)](https://travis-ci.org/mountainMath/VancouvR)
 [![R build status](https://github.com/mountainMath/VancouvR/workflows/R-CMD-check/badge.svg)](https://github.com/mountainMath/VancouvR/actions)
 <!-- badges: end -->
 
@@ -13,7 +12,7 @@ The package caches downloaded data for the duration of the current session, so r
 
 
 ### Reference
-[VancouverOpenData package reference](https://mountainmath.github.io/VancouvR/index.html)
+[VancouverOpenData package reference](https://mountainmath.github.io/VancouvR/)
 
 ### Installing the package
 To install the latest release version of `VancouvR` from CRAN use
