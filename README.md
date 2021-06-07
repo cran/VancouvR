@@ -2,6 +2,8 @@
 
 <!-- badges: start -->
 [![R build status](https://github.com/mountainMath/VancouvR/workflows/R-CMD-check/badge.svg)](https://github.com/mountainMath/VancouvR/actions)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/VancouvR)](https://cran.r-project.org/package=VancouvR)
+[![CRAN_Downloads_Badge](https://cranlogs.r-pkg.org/badges/VancouvR)](https://cranlogs.r-pkg.org/badges/VancouvR)
 <!-- badges: end -->
 
 <a href="https://mountainmath.github.io/VancouvR/index.html"><img src="https://raw.githubusercontent.com/mountainMath/VancouvR/master/images/VancouvR-sticker.png" alt="VancouvR logo" align="right" width = "25%" height = "25%"/></a>
@@ -49,7 +51,7 @@ search_cov_datasets("properties")
 Get the first 10 records of the property tax report for 2019 tax year.
 
 ``` r
-get_cov_data(dataset_id = "property-tax-report",where="tax_assessment_year=2019",rows=10)
+get_cov_data(dataset_id = "property-tax-report",where="tax_assessment_year='2021'",rows=10)
 ```
 
 Get metadata for the street trees dataset.
