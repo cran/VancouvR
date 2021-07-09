@@ -1,14 +1,14 @@
-38ba9faa32b3be55345a3182e6b6634b *DESCRIPTION
+532b183a8afee54faec85b89eec0ee15 *DESCRIPTION
 a769d83051d3bbbd54bdb7850f8bb5ff *LICENSE
 cc4f2eb02db63c5d5252fbe935feed8d *NAMESPACE
-4d5890f16ce9f6d35eae575c383149e9 *NEWS.md
-87630617c1e30943d311de4b6225c590 *R/datasets.R
+79f3845d9954bc91020a1967f89cd828 *NEWS.md
+011c014a16b84eb094dc5271090f42ab *R/datasets.R
 d3bad5084eeae6e97bdd6735a782b569 *R/helpers.R
 4d6f7df4c7d2c1056b45e5c6b90a6beb *README.md
 bb3e7818a5645fafd006073fc44732a8 *build/vignette.rds
-3189c119d72eb90e97b27a6c44be46ba *inst/doc/Demo.R
-eb49c9040b6fd1ad76727f1f8a5e7820 *inst/doc/Demo.Rmd
-9797fd943342faccb6e2466d826fef7d *inst/doc/Demo.html
+444aee6371cca763ce1b63ae9e0ef66e *inst/doc/Demo.R
+ba4781f77bbd32ec46e238e1d8eceb7d *inst/doc/Demo.Rmd
+9e14be1b2ab79c420f94d90e7494d93f *inst/doc/Demo.html
 5c1897452f2c80525a4b46269a93ba1e *inst/doc/Isolines.R
 8f09912d294dc7d03879f596833b3974 *inst/doc/Isolines.Rmd
 b3674926e38b23a3cc0a87825b282069 *inst/doc/Isolines.html
@@ -18,5 +18,5 @@ a1c1eed9d5c5b865232afd4f5639ea6b *man/get_cov_data.Rd
 41f4d2a02c27d7cb5dc5d7a8a51fa510 *man/get_cov_metadata.Rd
 1f428e55ce29c1216d98c600582709d9 *man/list_cov_datasets.Rd
 052c78c65bc86fc3a8cef866a1af46c6 *man/search_cov_datasets.Rd
-eb49c9040b6fd1ad76727f1f8a5e7820 *vignettes/Demo.Rmd
+ba4781f77bbd32ec46e238e1d8eceb7d *vignettes/Demo.Rmd
 8f09912d294dc7d03879f596833b3974 *vignettes/Isolines.Rmd

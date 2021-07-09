@@ -7,7 +7,9 @@
 #'
 #' @examples
 #' # List and search available datasets
+#' \dontrun{
 #' list_cov_datasets()
+#' }
 #'
 list_cov_datasets <- function(trim = TRUE, apikey=getOption("VancouverOpenDataApiKey"),refresh=FALSE){
   cache_file <- file.path(tempdir(),paste0("CoV_data_catalog.rda"))
@@ -21,8 +23,12 @@ list_cov_datasets <- function(trim = TRUE, apikey=getOption("VancouverOpenDataAp
       warning(content(response))
       stop(paste0("Stopping, returned status code ",response$status_code))
     }
-    result=read_delim(content(response,as="text"),delim=";",col_types = cols(.default="c")) %>%
-      set_names(gsub("^default\\.|^custom\\.|dcat\\.","",names(.))) %>%
+    result <- read_delim(content(response,as="text"),delim=";",col_types = cols(.default="c"))
+    header <- tibble(h=names(result)) %>%
+      mutate(hh=case_when(!grepl(".+\\..+|^datasetid$",.data$h) ~ paste0("X.",.data$h), TRUE ~ .data$h))%>%
+      mutate(hhh=gsub("^default\\.|^custom\\.|dcat\\.","",.data$hh))
+    result<- result %>%
+      set_names(header$hhh) %>%
       mutate(dataset_id=.data$datasetid) %>%
       select(c(main_cols,setdiff(names(.),main_cols))) %>%
       mutate_if(is.character,unqoute_strings)
@@ -42,7 +48,9 @@ list_cov_datasets <- function(trim = TRUE, apikey=getOption("VancouverOpenDataAp
 #'
 #' @examples
 #' # search available datasets relating to trees
+#' \dontrun{
 #' search_cov_datasets("trees")
+#' }
 #'
 search_cov_datasets <- function(search_term, trim=TRUE, apikey=getOption("VancouverOpenDataApiKey"),refresh=FALSE){
   datasets <- list_cov_datasets(trim=FALSE,apikey = apikey,refresh = refresh)
@@ -75,7 +83,9 @@ search_cov_datasets <- function(search_term, trim=TRUE, apikey=getOption("Vancou
 #'
 #' @examples
 #' # Get the metadata for the street trees dataset
+#' \dontrun{
 #' get_cov_metadata("street-trees")
+#' }
 #'
 get_cov_metadata <- function(dataset_id,apikey=getOption("VancouverOpenDataApiKey"),refresh=FALSE){
   cache_file <- file.path(tempdir(),paste0("CoV_metadata_,",dataset_id,".rda"))
@@ -121,7 +131,9 @@ get_cov_metadata <- function(dataset_id,apikey=getOption("VancouverOpenDataApiKe
 #'
 #' @examples
 #' # Get all parking tickets issued at the 1100 block of Alberni Street between 2017 and 2019
+#' \dontrun{
 #' get_cov_data("parking-tickets-2017-2019",where = "block = 1100 AND street = 'ALBERNI ST'")
+#' }
 #'
 get_cov_data <- function(dataset_id,format=c("csv","geojson"),
                          select= "*",
@@ -183,9 +195,11 @@ get_cov_data <- function(dataset_id,format=c("csv","geojson"),
 #'
 #' @examples
 #' # Count all parking tickets that relate to fire hydrants by ticket status
+#' \dontrun{
 #' aggregate_cov_data("parking-tickets-2017-2019",
 #'                    group_by = "status",
 #'                    where = "infractiontext LIKE 'FIRE'")
+#' }
 #'
 aggregate_cov_data <- function(dataset_id,select="count(*) as count",group_by=NULL,where=NULL,apikey=getOption("VancouverOpenDataApiKey"),
                          refresh=FALSE) {
