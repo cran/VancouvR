@@ -13,48 +13,51 @@ library(tidyr)
 library(ggplot2)
 
 ## -----------------------------------------------------------------------------
-search_cov_datasets("property-tax") %>%
+search_cov_datasets("property-tax") |>
   select(dataset_id,title)
 
 ## -----------------------------------------------------------------------------
-get_cov_metadata("property-tax-report") %>%
+get_cov_metadata("property-tax-report") |>
   tail(10)
 
 ## -----------------------------------------------------------------------------
-search_cov_datasets("property-tax") %>%
-  pull(dataset_id) %>%
+search_cov_datasets("property-tax") |>
+  pull(dataset_id) |>
   lapply(function(ds)
     aggregate_cov_data(ds,
                        group_by="tax_assessment_year as Year",
                        where="zoning_district like 'RS-' or zoning_district like 'R1-1'",
-                       select="sum(current_land_value) as Land, sum(current_improvement_value) as Building")) %>% 
-  bind_rows() %>%
-  mutate(Date=as.Date(paste0(as.integer(Year)-1,"-07-01"))) %>%
-  pivot_longer(c("Land","Building")) %>%
-  ggplot(aes(x=Year,y=value,color=name,group=name)) +
+                       select="sum(current_land_value) as Land, sum(current_improvement_value) as Building")) |> 
+  bind_rows() |>
+  mutate(Date=as.Date(paste0(as.integer(Year)-1,"-07-01"))) |>
+  pivot_longer(c("Land","Building")) |>
+  ggplot(aes(x=Date,y=value,color=name,group=name)) +
   geom_point(shape=21) +
   geom_line() +
-  scale_y_continuous(labels=function(x)paste0("$",x/1000000000,"Bn")) +
+  scale_x_date(breaks=as.Date(paste0(seq(2005,2050,5),"-07-01")),date_labels="%b %Y") +
+  scale_y_continuous(labels=function(x)scales::dollar(x, scale=10^-9,suffix="Bn"),
+                     breaks=2^seq(0,10)*5*10^9,trans="log") +
   labs(title="City of Vancouver RS/R1-1 zoned land and building values",
-       x="Tax year", color="", y="Aggregate value (nominal)")
+       x=NULL, color=NULL, y="Aggregate value (nominal)")
 
 ## -----------------------------------------------------------------------------
 tax_data <- get_cov_data(dataset_id = "property-tax-report",
-                         where="tax_assessment_year='2024'",
+                         where="tax_assessment_year='2026'",
                          select = "current_land_value, land_coordinate as tax_coord")
-property_polygons <- get_cov_data(dataset_id="property-parcel-polygons") %>%
+property_polygons <- get_cov_data(dataset_id="property-parcel-polygons") |>
   sf::st_transform(26910)
 
 ## -----------------------------------------------------------------------------
-plot_data <- property_polygons %>% 
-  left_join(tax_data %>% group_by(tax_coord) %>% summarize(current_land_value=sum(current_land_value)),by="tax_coord") %>%
-  mutate(rlv=current_land_value/as.numeric(sf::st_area(geometry))) %>%
+plot_data <- property_polygons |> 
+  left_join(tax_data |> group_by(tax_coord) |> summarize(current_land_value=sum(current_land_value)),by="tax_coord") |>
+  mutate(rlv=current_land_value/as.numeric(sf::st_area(geometry))) |>
   mutate(rlvd=cut(rlv,breaks=c(-Inf,1000,2000,3000,4000,5000,7500,10000,25000,50000,Inf),
-                  labels=c("<$1k","$1k-$2k","$2k-$3k","$3k-$4k","$4k-$5k","$5k-$7.5k","$7.5k-$10k","$10k-$25k","$25k-$50k",">$50k"),
+                  labels=c("<$1k","$1k-$2k","$2k-$3k","$3k-$4k","$4k-$5k","$5k-$7.5k","$7.5k-$10k",
+                           "$10k-$25k","$25k-$50k",">$50k"),
                   ordered_result = TRUE))
 ggplot(plot_data) +
   geom_sf(aes(fill=rlvd),color=NA) +
   scale_fill_viridis_d(option="magma",na.value="darkgrey") +
-  labs(title="July 2023 relative land values",fill="Value per m^2",caption="CoV Open Data") +
+  labs(title="2026 assessment relative land values",fill="Value per m^2",caption="CoV Open Data") +
   coord_sf(datum=NA)
 
