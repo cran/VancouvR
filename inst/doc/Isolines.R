@@ -23,3 +23,7 @@ ggplot(contours) +
 get_cov_metadata("elevation-contour-lines-1-metre-contours") |>
   dplyr::filter(type == "geo_shape")
 
+## -----------------------------------------------------------------------------
+list_cov_datasets(refine = "features:geo") |>
+  dplyr::select(dataset_id, title)
+
